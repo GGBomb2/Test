@@ -44,7 +44,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:text="五邑大学" >
+                >
 
             <requestFocus />
         </EditText>
@@ -92,13 +92,17 @@
     <RelativeLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
-
-        <com.baidu.mapapi.map.MapView
-                android:id="@+id/map"
+            android:layout_height="match_parent"
+            android:id="@+id/relativelyout_guidemap">
+        <RelativeLayout
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:clickable="true" />
+                android:id="@+id/relativeLayout_test"
+                android:gravity="center">
+
+        </RelativeLayout>
+
+
 
         <LinearLayout
                 xmlns:android="http://schemas.android.com/apk/res/android"

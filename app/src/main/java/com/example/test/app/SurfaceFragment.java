@@ -138,16 +138,17 @@ public class SurfaceFragment extends Fragment implements SurfaceHolder.Callback{
         button_guide.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 FragmentManager fm = getFragmentManager();
                 // 开启Fragment事务
                 FragmentTransaction transaction = fm.beginTransaction();
                 if (mGuideFragment == null)
                 {
                     mGuideFragment=new GuideFragment();
-
                 }
                 // 使用当前Fragment的布局替代id_content的控件
                 transaction.replace(R.id.id_content,mGuideFragment,"GuideFragment");
+                ((MainActivity)getActivity()).mGuideFragment=mGuideFragment;
                 transaction.addToBackStack(null);
                 transaction.commit();
             }
