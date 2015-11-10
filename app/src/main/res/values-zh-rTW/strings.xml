@@ -28,4 +28,5 @@
     <string name="app_name">Test</string>
     <string name="cannot_get_location">--</string>
     <string name="hello_world">Hello world!</string>
+    <string name="name_route">路线规划</string>
 </resources>

@@ -24,7 +24,11 @@ import com.baidu.mapapi.overlayutil.TransitRouteOverlay;
 import com.baidu.mapapi.overlayutil.WalkingRouteOverlay;
 import com.baidu.mapapi.search.core.RouteLine;
 import com.baidu.mapapi.search.core.SearchResult;
+import com.baidu.mapapi.search.poi.OnGetPoiSearchResultListener;
+import com.baidu.mapapi.search.poi.PoiSearch;
 import com.baidu.mapapi.search.route.*;
+import com.baidu.mapapi.search.sug.OnGetSuggestionResultListener;
+import com.baidu.mapapi.search.sug.SuggestionSearch;
 
 public class MainActivity extends Activity implements BaiduMap.OnMapClickListener,
         OnGetRoutePlanResultListener {
@@ -186,24 +190,23 @@ public class MainActivity extends Activity implements BaiduMap.OnMapClickListene
      *
      * @param v
      */
-    public void SearchButtonProcess(View v) {
+    public void SearchButtonProcess(View v,LatLng mDestination) {
         //重置浏览节点的路线数据
         route = null;
         mBaiduMap.clear();
         // 处理搜索按钮响应
-        EditText editSt = (EditText)findViewById(R.id.start);
+        //EditText editSt = (EditText)findViewById(R.id.start);
         EditText editEn = (EditText)findViewById(R.id.end);
         //设置起终点信息，对于tranist search 来说，城市名无意义
-        if((editSt.getText()!=null&&!editSt.getText().toString().equals(""))&&(editEn.getText()!=null&&!editEn.getText().toString().equals("")))
+        if(editEn.getText()!=null&&!editEn.getText().toString().equals(""))
         {
             PlanNode stNode = PlanNode.withLocation(new LatLng(mBaiduMap.getLocationData().latitude,mBaiduMap.getLocationData().longitude));
-            if(!editSt.getText().toString().equals("我的位置"))
-            {
-                //Toast.makeText(this,"不是我的位置",Toast.LENGTH_SHORT).show();
-                stNode = PlanNode.withCityNameAndPlaceName("广东", editSt.getText().toString());
-            }
 
-            PlanNode enNode = PlanNode.withCityNameAndPlaceName("广东", editEn.getText().toString());
+            if(mDestination==null)
+            {
+                Toast.makeText(this,"没有目的地",Toast.LENGTH_SHORT);return;
+            }
+            PlanNode enNode = PlanNode.withLocation(mDestination);
 
             // 实际使用中请对起点终点城市进行正确的设定
             if (v.getId() == R.id.drive) {
@@ -223,14 +226,7 @@ public class MainActivity extends Activity implements BaiduMap.OnMapClickListene
         }
         else
         {
-            if(editSt.getText()!=null&&editSt.getText().toString()!="")
-            {
-                Toast.makeText(this,"请输入起始位置",Toast.LENGTH_SHORT);
-            }
-            else
-            {
                 Toast.makeText(this,"请输入终点",Toast.LENGTH_SHORT);
-            }
         }
 
     }
