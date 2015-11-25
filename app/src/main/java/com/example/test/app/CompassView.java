@@ -23,19 +23,19 @@ import android.util.AttributeSet;
 import android.widget.ImageView;
 
 /**
- * è‡ªå®šä¹‰ä¸€ä¸ªViewç»§æ‰¿ImageViewï¼Œå¢åŠ ä¸€ä¸ªé€šç”¨çš„æ—‹è½¬å›¾ç‰‡èµ„æºçš„æ–¹æ³•
+ * ×Ô¶¨ÒåÒ»¸öView¼Ì³ĞImageView£¬Ôö¼ÓÒ»¸öÍ¨ÓÃµÄĞı×ªÍ¼Æ¬×ÊÔ´µÄ·½·¨
  * 
  * @author way
  * 
  */
 public class CompassView extends ImageView {
-	private float mDirection;// æ–¹å‘æ—‹è½¬æµ®ç‚¹æ•°
-	private Drawable compass;// å›¾ç‰‡èµ„æº
+	private float mDirection;// ·½ÏòĞı×ª¸¡µãÊı
+	private Drawable compass;// Í¼Æ¬×ÊÔ´
 	
-	//ä¸‰ä¸ªæ„é€ å™¨
+	//Èı¸ö¹¹ÔìÆ÷
 	public CompassView(Context context) {
 		super(context);
-		mDirection = 0.0f;// é»˜è®¤ä¸æ—‹è½¬
+		mDirection = 0.0f;// Ä¬ÈÏ²»Ğı×ª
 		compass = null;
 	}
 
@@ -54,25 +54,25 @@ public class CompassView extends ImageView {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		if (compass == null) {
-			compass = getDrawable();// è·å–å½“å‰viewçš„å›¾ç‰‡èµ„æº
-			compass.setBounds(0, 0, getWidth(), getHeight());// å›¾ç‰‡èµ„æºåœ¨viewçš„ä½ç½®ï¼Œæ­¤å¤„ç›¸å½“äºå……æ»¡view
+			compass = getDrawable();// »ñÈ¡µ±Ç°viewµÄÍ¼Æ¬×ÊÔ´
+			compass.setBounds(0, 0, getWidth(), getHeight());// Í¼Æ¬×ÊÔ´ÔÚviewµÄÎ»ÖÃ£¬´Ë´¦Ïàµ±ÓÚ³äÂúview
 		}
 
 		canvas.save();
-		canvas.rotate(mDirection, getWidth() / 2, getHeight() / 2);// ç»•å›¾ç‰‡ä¸­å¿ƒç‚¹æ—‹è½¬ï¼Œ
-		compass.draw(canvas);// æŠŠæ—‹è½¬åçš„å›¾ç‰‡ç”»åœ¨viewä¸Šï¼Œå³ä¿æŒæ—‹è½¬åçš„æ ·å­
-		canvas.restore();// ä¿å­˜ä¸€ä¸‹
+		canvas.rotate(mDirection, getWidth() / 2, getHeight() / 2);// ÈÆÍ¼Æ¬ÖĞĞÄµãĞı×ª£¬
+		compass.draw(canvas);// °ÑĞı×ªºóµÄÍ¼Æ¬»­ÔÚviewÉÏ£¬¼´±£³ÖĞı×ªºóµÄÑù×Ó
+		canvas.restore();// ±£´æÒ»ÏÂ
 	}
 
 	/**
-	 * è‡ªå®šä¹‰æ›´æ–°æ–¹å‘çš„æ–¹æ³•
+	 * ×Ô¶¨Òå¸üĞÂ·½ÏòµÄ·½·¨
 	 * 
 	 * @param direction
-	 *            ä¼ å…¥çš„æ–¹å‘
+	 *            ´«ÈëµÄ·½Ïò
 	 */
 	public void updateDirection(float direction) {
 		mDirection = direction;
-		invalidate();// é‡æ–°åˆ·æ–°ä¸€ä¸‹ï¼Œæ›´æ–°æ–¹å‘
+		invalidate();// ÖØĞÂË¢ĞÂÒ»ÏÂ£¬¸üĞÂ·½Ïò
 	}
 
 }
