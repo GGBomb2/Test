@@ -16,10 +16,14 @@ import android.util.Log;
 import android.view.*;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.*;
+import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.core.RouteLine;
+import com.baidu.mapapi.search.route.WalkingRouteLine;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.lang.Math;
 
 /**
  * Created by GGBomb2 on 2015/11/6.
@@ -34,6 +38,9 @@ public class SurfaceFragment extends Fragment implements SurfaceHolder.Callback{
     private SurfaceView mPreviewSV = null; //预览SurfaceView
     private SurfaceHolder mySurfaceHolder = null;
     private GuideFragment mGuideFragment=null;
+    public boolean isGuiding=false;//是否正在导航
+    RouteLine mroute=null;//路线
+    Object Nextstep=null;//下一步行节点
 
     //指南针
     private static final int EXIT_TIME = 2000;// 两次按返回键的间隔判断
@@ -58,6 +65,58 @@ public class SurfaceFragment extends Fragment implements SurfaceHolder.Callback{
     View mCompassView;
     ImageView mGuideAnimation;
     private boolean mStopDrawing;// 是否停止指南针旋转的标志位
+
+    //节点指向针
+    CompassView rPointer;// 节点指向针view
+    private float rDirection;// 当前浮点方向
+    private float rTargetDirection;// 目标浮点方向
+    protected final Handler rHandler = new Handler();
+    private boolean rStopDrawing;// 是否停止节点指向针旋转的标志位
+
+
+    // 这个是更新节点指向针旋转的线程，handler的灵活使用，每20毫秒检测方向变化值，对应更新节点指向针旋转
+    protected Runnable rCompassViewUpdater = new Runnable() {
+        @Override
+        public void run() {
+            if (rPointer != null && !rStopDrawing) {
+                if(mroute.getAllStep()==null)
+                {
+                    Toast.makeText(getActivity(),"getAllstep!=null",Toast.LENGTH_SHORT);
+                }
+                if (mroute != null || mroute.getAllStep() != null) {
+                    Nextstep=mroute.getAllStep().get(1);
+                }
+                if (rDirection != rTargetDirection) {
+
+                    // calculate the short routine
+                    float to = rTargetDirection;
+                    if (to - rDirection > 180) {
+                        to -= 360;
+                    } else if (to - rDirection < -180) {
+                        to += 360;
+                    }
+                    // limit the max speed to MAX_ROTATE_DEGREE
+                    float distance = to - rDirection;
+                    if (Math.abs(distance) > MAX_ROATE_DEGREE) {
+                        distance = distance > 0 ? MAX_ROATE_DEGREE
+                                : (-1.0f * MAX_ROATE_DEGREE);
+                    }
+
+                    // need to slow down if the distance is short
+                    rDirection = normalizeDegree(rDirection
+                            + ((to - rDirection) * mInterpolator
+                            .getInterpolation(Math.abs(distance) > MAX_ROATE_DEGREE ? 0.4f
+                                    : 0.3f)));// 用了一个加速动画去旋转图片，很细致
+                    rPointer.updateDirection(rDirection);// 更新指南针旋转
+                }
+
+                //updateDirection();// 更新方向值
+
+                rHandler.postDelayed(rCompassViewUpdater, 20);// 20毫米后重新执行自己，比定时器好
+            }
+        }
+    };
+
 
     protected Handler invisiableHandler = new Handler() {
         public void handleMessage(Message msg) {
@@ -298,12 +357,15 @@ public class SurfaceFragment extends Fragment implements SurfaceHolder.Callback{
         mGuideAnimation = (ImageView) view.findViewById(R.id.guide_animation);
         mDirection = 0.0f;// 初始化起始方向
         mTargetDirection = 0.0f;// 初始化目标方向
+        rDirection = 0.0f;// 初始化起始方向
+        rTargetDirection = 0.0f;// 初始化目标方向
         mInterpolator = new AccelerateInterpolator();// 实例化加速动画对象
         mStopDrawing = true;
+        rStopDrawing=true;
         mChinease = TextUtils.equals(Locale.getDefault().getLanguage(), "zh");// 判断系统当前使用的语言是否为中文
-
         mCompassView = view.findViewById(R.id.view_compass);// 实际上是一个LinearLayout，装指南针ImageView和位置TextView
         mPointer = (CompassView) view.findViewById(R.id.compass_pointer);// 自定义的指南针view
+        rPointer=(CompassView)view.findViewById(R.id.compassbackdround);
         // mLocationTextView = (TextView)
         // findViewById(R.id.textview_location);// 显示位置信息的TextView
         mDirectionLayout = (LinearLayout) view.findViewById(R.id.layout_direction);// 顶部显示方向名称（东南西北）的LinearLayout
@@ -514,6 +576,24 @@ public class SurfaceFragment extends Fragment implements SurfaceHolder.Callback{
         @Override
         public void onSensorChanged(SensorEvent event) {
             float direction = event.values[mSensorManager.DATA_X] * -1.0f;
+            if(Nextstep!=null)
+            {
+                LatLng nodeLocation =null;
+                LatLng mLocation=null;
+                if (Nextstep instanceof WalkingRouteLine.WalkingStep) {
+                    nodeLocation = ((WalkingRouteLine.WalkingStep) Nextstep).getEntrance().getLocation();
+                    if(((MainActivity)getActivity()).mBaiduMap!=null)
+                    {
+                        mLocation=new LatLng(((MainActivity)getActivity()).mBaiduMap.getLocationData().latitude,((MainActivity)getActivity()).mBaiduMap.getLocationData().longitude);
+                    }
+                    if(nodeLocation!=null&&mLocation!=null)
+                    {
+                        //double rdirection=Math.atan((nodeLocation.longitude-mLocation.longitude)/(nodeLocation.latitude-mLocation.latitude));
+                        //rTargetDirection=normalizeDegree((((float)rdirection)-direction));
+                        rTargetDirection=normalizeDegree((((WalkingRouteLine.WalkingStep) Nextstep).getDirection()-direction)*-1.0f);
+                    }
+                }
+            }
             mTargetDirection = normalizeDegree(direction);// 赋值给全局变量，让指南针旋转
             // Log.i("way", event.values[mSensorManager.DATA_Y] + "");
         }
@@ -551,6 +631,11 @@ public class SurfaceFragment extends Fragment implements SurfaceHolder.Callback{
             // .show();
         }
         mStopDrawing=false;
+        if(isGuiding)
+        {
+            rStopDrawing=false;
+        }
+        rHandler.postDelayed(rCompassViewUpdater,20);
         mHandler.postDelayed(mCompassViewUpdater,20);
     }
 

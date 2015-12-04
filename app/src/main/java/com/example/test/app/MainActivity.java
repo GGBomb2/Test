@@ -345,6 +345,11 @@ public class MainActivity extends Activity implements BaiduMap.OnMapClickListene
             overlay.setData(result.getRouteLines().get(0));
             overlay.addToMap();
             overlay.zoomToSpan();
+            if(mSurfaceFragment!=null)
+            {
+                mSurfaceFragment.mroute=route;
+                mSurfaceFragment.isGuiding=true;
+            }
         }
 
     }
