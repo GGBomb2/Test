@@ -241,6 +241,17 @@ public class GuideFragment extends Fragment implements OnGetPoiSearchResultListe
             MapStatusUpdate u=MapStatusUpdateFactory.newLatLng(result.getAllPoi().get(0).location);
             mBaiduMap.animateMapStatus(u);
             mDestination=result.getAllPoi().get(0).location;
+            int count=result.getAllPoi().size();
+            PoiInfo[] poiinfos=new PoiInfo[count];
+            for(int n=0;n<count;n++)
+            {
+                poiinfos[n]=result.getAllPoi().get(n);
+            }
+            if(((MainActivity)getActivity()).mSurfaceFragment!=null)
+            {
+                ((MainActivity)getActivity()).mSurfaceFragment.poiinfos=poiinfos;
+            }
+
             return;
         }
         if (result.error == SearchResult.ERRORNO.AMBIGUOUS_KEYWORD) {

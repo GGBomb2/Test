@@ -2,6 +2,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+    <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" android:id="@+id/relativelayout_overlay">
+    </RelativeLayout>
     <LinearLayout
             android:id="@+id/view_compass"
             android:layout_width="fill_parent"
@@ -45,15 +49,12 @@
                     android:layout_marginTop="@dimen/direction_margin_top"
                     android:textColor="@android:color/white"
                     android:textSize="@dimen/text_direction_size" />
-            <ImageView
-                    android:layout_width="350dp"
-
+            <com.example.test.app.CompassView
+                    android:layout_width="wrap_content"
                     android:id="@+id/compassbackdround"
-                    android:layout_centerVertical="true"
-                    android:layout_centerHorizontal="true"
                     android:src="@drawable/background"
-                    android:layout_gravity="center"
-                    android:layout_height="350dp"/>
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"/>
             <com.example.test.app.CompassView
                     android:id="@+id/compass_pointer"
                     android:layout_width="wrap_content"

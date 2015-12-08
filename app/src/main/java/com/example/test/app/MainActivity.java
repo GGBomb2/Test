@@ -207,7 +207,7 @@ public class MainActivity extends Activity implements BaiduMap.OnMapClickListene
                 Toast.makeText(this,"没有目的地",Toast.LENGTH_SHORT);return;
             }
             PlanNode enNode = PlanNode.withLocation(mDestination);
-
+            mSurfaceFragment.poiinfos=null;
             // 实际使用中请对起点终点城市进行正确的设定
             if (v.getId() == R.id.drive) {
                 mSearch.drivingSearch((new DrivingRoutePlanOption())

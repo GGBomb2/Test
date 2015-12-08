@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.location.Location;
 import android.hardware.*;
@@ -17,8 +18,10 @@ import android.view.*;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.*;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.core.PoiInfo;
 import com.baidu.mapapi.search.core.RouteLine;
 import com.baidu.mapapi.search.route.WalkingRouteLine;
+import com.baidu.mapapi.utils.DistanceUtil;
 
 import java.io.IOException;
 import java.util.List;
@@ -41,6 +44,7 @@ public class SurfaceFragment extends Fragment implements SurfaceHolder.Callback{
     public boolean isGuiding=false;//是否正在导航
     RouteLine mroute=null;//路线
     Object Nextstep=null;//下一步行节点
+    PoiInfo[] poiinfos=null;
 
     //指南针
     private static final int EXIT_TIME = 2000;// 两次按返回键的间隔判断
@@ -54,6 +58,8 @@ public class SurfaceFragment extends Fragment implements SurfaceHolder.Callback{
     CompassView mPointer;// 指南针view
     private float mDirection;// 当前浮点方向
     private float mTargetDirection;// 目标浮点方向
+    private float mLRDirection;//左右翘起角
+    private float mUDDirection;//上下翘起角
     private boolean mChinease;// 系统当前是否使用中文
     protected final Handler mHandler = new Handler();
     LinearLayout mDirectionLayout;// 显示方向（东南西北）的view
@@ -71,6 +77,7 @@ public class SurfaceFragment extends Fragment implements SurfaceHolder.Callback{
     private float rDirection;// 当前浮点方向
     private float rTargetDirection;// 目标浮点方向
     protected final Handler rHandler = new Handler();
+    protected final Handler mOverlayHandler=new Handler();//更新图层处理
     private boolean rStopDrawing;// 是否停止节点指向针旋转的标志位
 
 
@@ -160,6 +167,42 @@ public class SurfaceFragment extends Fragment implements SurfaceHolder.Callback{
         }
     };
 
+    // Overlay刷新，handler的灵活使用，每20毫秒检测方向变化值，对应更新指南针旋转
+    protected Runnable mOverlayUpdater = new Runnable() {
+        @Override
+        public void run() {
+            RelativeLayout raly2=(RelativeLayout)view.findViewById(R.id.relativelayout_overlay);
+            raly2.removeAllViews();
+            if(poiinfos!=null&&((MainActivity)getActivity()).mBaiduMap!=null) {
+                int count=poiinfos.length;
+                LatLng mLocation=new LatLng(((MainActivity)getActivity()).mBaiduMap.getLocationData().latitude,((MainActivity)getActivity()).mBaiduMap.getLocationData().longitude);
+                for(int n=0;n<count;n++) {
+                    ImageView imageView=new ImageView(getActivity());
+                    imageView.setImageResource(R.drawable.app_icon);
+                    double distance= DistanceUtil. getDistance(mLocation,poiinfos[n].location);
+                    if(distance>1000) {
+                        continue;
+                    }
+                    double rdirection=Math.atan(((poiinfos[n].location.latitude-mLocation.latitude))/((poiinfos[n].location.longitude-mLocation.longitude)));
+                    //normalizeDegree((((float)rdirection)-direction)*-1.0f);
+                    rdirection=(270.0f-180*rdirection/Math.PI)-mTargetDirection;
+                    if(Math.abs(rdirection)>90&&Math.abs(rdirection)<270) {
+                        continue;
+                    }
+                    int height=(int)(150-((double)3/25)*distance);
+                    int width=height/3*5;
+                    RelativeLayout.LayoutParams lp1=new RelativeLayout.LayoutParams(width,height);
+                    lp1.topMargin=(int)((((float)2/3)-Math.cos(mUDDirection*Math.PI/180))*raly2.getHeight());
+                    //if(lp1.topMargin<0) continue;
+                    lp1.leftMargin=(int)((((float)1/2)-Math.sin(rdirection * Math.PI / 180))*raly2.getWidth());
+                    //if(lp1.leftMargin<0) continue;
+                    raly2.addView(imageView, lp1);
+                }
+            }
+            mOverlayHandler.postDelayed(mOverlayUpdater, 20);
+        }
+    };
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
@@ -174,6 +217,8 @@ public class SurfaceFragment extends Fragment implements SurfaceHolder.Callback{
         RelativeLayout raly=(RelativeLayout)view.findViewById(R.id.aimView);
         raly.bringToFront();
         //Compass
+        RelativeLayout raly2=(RelativeLayout)view.findViewById(R.id.relativelayout_overlay);
+        raly2.bringToFront();
         //setContentView(R.layout.activity_main);
         initResources();// 初始化view
         initServices();// 初始化传感器和位置服务
@@ -588,12 +633,16 @@ public class SurfaceFragment extends Fragment implements SurfaceHolder.Callback{
                     }
                     if(nodeLocation!=null&&mLocation!=null)
                     {
-                        //double rdirection=Math.atan((nodeLocation.longitude-mLocation.longitude)/(nodeLocation.latitude-mLocation.latitude));
-                        //rTargetDirection=normalizeDegree((((float)rdirection)-direction));
-                        rTargetDirection=normalizeDegree((((WalkingRouteLine.WalkingStep) Nextstep).getDirection()-direction)*-1.0f);
+                        double rdirection=Math.atan((nodeLocation.latitude-mLocation.latitude)/(nodeLocation.longitude-mLocation.longitude));
+                        double exrTarget=270.0f-(180*rdirection/Math.PI);
+                        rTargetDirection=normalizeDegree((((float)exrTarget)-direction)*-1.0f);
+                        //double x=((WalkingRouteLine.WalkingStep) Nextstep).getDirection();
+                        //rTargetDirection=normalizeDegree((((WalkingRouteLine.WalkingStep) Nextstep).getDirection()-direction)*-1.0f);
                     }
                 }
             }
+            mUDDirection=normalizeDegree(event.values[1]);//仰角
+            mLRDirection=normalizeDegree(event.values[2]);//左右翘起角
             mTargetDirection = normalizeDegree(direction);// 赋值给全局变量，让指南针旋转
             // Log.i("way", event.values[mSensorManager.DATA_Y] + "");
         }
@@ -612,6 +661,7 @@ public class SurfaceFragment extends Fragment implements SurfaceHolder.Callback{
     public void onPause() {// 在暂停的生命周期里注销传感器服务和位置更新服务
 
         super.onPause();
+        mOverlayHandler.removeCallbacks(mOverlayUpdater);
         if (mOrientationSensor != null) {
             mSensorManager.unregisterListener(mOrientationSensorEventListener);
         }
@@ -637,6 +687,7 @@ public class SurfaceFragment extends Fragment implements SurfaceHolder.Callback{
         }
         rHandler.postDelayed(rCompassViewUpdater,20);
         mHandler.postDelayed(mCompassViewUpdater,20);
+        mOverlayHandler.postDelayed(mOverlayUpdater, 20);
     }
 
 }
