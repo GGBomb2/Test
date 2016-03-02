@@ -173,28 +173,32 @@ public class SurfaceFragment extends Fragment implements SurfaceHolder.Callback{
         public void run() {
             RelativeLayout raly2=(RelativeLayout)view.findViewById(R.id.relativelayout_overlay);
             raly2.removeAllViews();
+            TextView tx=(TextView)view.findViewById(R.id.textView);
+            tx.setText("");
             if(poiinfos!=null&&((MainActivity)getActivity()).mBaiduMap!=null) {
                 int count=poiinfos.length;
                 LatLng mLocation=new LatLng(((MainActivity)getActivity()).mBaiduMap.getLocationData().latitude,((MainActivity)getActivity()).mBaiduMap.getLocationData().longitude);
                 for(int n=0;n<count;n++) {
                     ImageView imageView=new ImageView(getActivity());
-                    imageView.setImageResource(R.drawable.app_icon);
+                    imageView.setImageResource(R.mipmap.ic_launcher);
                     double distance= DistanceUtil. getDistance(mLocation,poiinfos[n].location);
                     if(distance>1000) {
                         continue;
                     }
                     double rdirection=Math.atan(((poiinfos[n].location.latitude-mLocation.latitude))/((poiinfos[n].location.longitude-mLocation.longitude)));
                     //normalizeDegree((((float)rdirection)-direction)*-1.0f);
-                    rdirection=(270.0f-180*rdirection/Math.PI)-mTargetDirection;
+                    rdirection=normalizeDegree((float)(180*rdirection/Math.PI));
+                    rdirection=normalizeDegree((float)(mTargetDirection-rdirection-90.0f));
+                    tx.append(Integer.toString(n)+"\t rdirection: "+Double.toString(rdirection)+"\nmTargetDirection: "+Float.toString(mTargetDirection)+"\n");
                     if(Math.abs(rdirection)>90&&Math.abs(rdirection)<270) {
                         continue;
                     }
-                    int height=(int)(150-((double)3/25)*distance);
+                    int height=(int)(170-((double)3/25)*distance);
                     int width=height/3*5;
                     RelativeLayout.LayoutParams lp1=new RelativeLayout.LayoutParams(width,height);
-                    lp1.topMargin=(int)((((float)2/3)-Math.cos(mUDDirection*Math.PI/180))*raly2.getHeight());
+                    lp1.topMargin=(int)((((float)1/3)-Math.cos(mUDDirection*Math.PI/180))*raly2.getHeight()-0.5f*height);
                     //if(lp1.topMargin<0) continue;
-                    lp1.leftMargin=(int)((((float)1/2)-Math.sin(rdirection * Math.PI / 180))*raly2.getWidth());
+                    lp1.leftMargin=(int)((((float)1/2)+Math.sin(rdirection * Math.PI / 180))*raly2.getWidth()-0.5f*width);
                     //if(lp1.leftMargin<0) continue;
                     raly2.addView(imageView, lp1);
                 }
@@ -634,7 +638,7 @@ public class SurfaceFragment extends Fragment implements SurfaceHolder.Callback{
                     if(nodeLocation!=null&&mLocation!=null)
                     {
                         double rdirection=Math.atan((nodeLocation.latitude-mLocation.latitude)/(nodeLocation.longitude-mLocation.longitude));
-                        double exrTarget=270.0f-(180*rdirection/Math.PI);
+                        double exrTarget=(180*rdirection/Math.PI)-270.0f;
                         rTargetDirection=normalizeDegree((((float)exrTarget)-direction)*-1.0f);
                         //double x=((WalkingRouteLine.WalkingStep) Nextstep).getDirection();
                         //rTargetDirection=normalizeDegree((((WalkingRouteLine.WalkingStep) Nextstep).getDirection()-direction)*-1.0f);
