@@ -30,6 +30,9 @@ import com.baidu.mapapi.search.route.*;
 import com.baidu.mapapi.search.sug.OnGetSuggestionResultListener;
 import com.baidu.mapapi.search.sug.SuggestionSearch;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends Activity implements BaiduMap.OnMapClickListener,
         OnGetRoutePlanResultListener {
     MapView mMapView=null;
@@ -116,6 +119,7 @@ public class MainActivity extends Activity implements BaiduMap.OnMapClickListene
         mLocClient.start();
         ////mCompassView.bringToFront();
 
+
     }
 
     private void setDefaultFragment()
@@ -143,7 +147,7 @@ public class MainActivity extends Activity implements BaiduMap.OnMapClickListene
             MyLocationData locData = new MyLocationData.Builder()
                     .accuracy(location.getRadius())
                             // 此处设置开发者获取到的方向信息，顺时针0-360
-                    .direction(mTargetDirection)
+                    .direction(mTargetDirection*-1.0f)
                     .latitude(location.getLatitude())
                     .longitude(location.getLongitude()).build();
             mBaiduMap.setMyLocationData(locData);
@@ -350,6 +354,17 @@ public class MainActivity extends Activity implements BaiduMap.OnMapClickListene
                 mSurfaceFragment.mroute=route;
                 mSurfaceFragment.isGuiding=true;
             }
+            // 添加折线
+            LatLng p1 = new LatLng(mBaiduMap.getLocationData().latitude, mBaiduMap.getLocationData().longitude);
+            LatLng p2 = new LatLng(p1.latitude+0.003f, p1.longitude+0.003f);
+            LatLng p3 = new LatLng(p1.latitude, p1.longitude+0.003f);
+            List<LatLng> points = new ArrayList<LatLng>();
+            points.add(p1);
+            points.add(p2);
+            points.add(p3);
+            OverlayOptions ooPolyline = new PolylineOptions().width(10)
+                    .color(0xAAFF0000).points(points);
+            mBaiduMap.addOverlay(ooPolyline);
         }
 
     }
