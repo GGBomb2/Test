@@ -55,8 +55,8 @@ public class MainActivity extends Activity implements BaiduMap.OnMapClickListene
     TextView mLatitudeTV;// 纬度
     TextView mLongitudeTV;// 经度
     //Fragments
-    GuideFragment mGuideFragment=null;
-    SurfaceFragment mSurfaceFragment=null;
+    GuideFragment mGuideFragment=null;             //导航模块
+    SurfaceFragment mSurfaceFragment=null;         //相机视图模块
     //搜索相关
     RoutePlanSearch mSearch = null;    // 搜索模块，也可去掉地图模块独立使用
     RouteLine route = null;
@@ -78,7 +78,7 @@ public class MainActivity extends Activity implements BaiduMap.OnMapClickListene
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
-        setDefaultFragment();
+        setDefaultFragment();                                  //设置默认模块
 
         //获取地图控件引用
         mMapView = (MapView) findViewById(R.id.bmapView);
@@ -87,9 +87,9 @@ public class MainActivity extends Activity implements BaiduMap.OnMapClickListene
         //raly.addView(mMapView);
         mMapView.showZoomControls(false);
         mMapView.bringToFront();
-        mCurrentMode = MyLocationConfiguration.LocationMode.COMPASS;
+        mCurrentMode = MyLocationConfiguration.LocationMode.COMPASS;//地图罗盘模式
         mBaiduMap = mMapView.getMap();
-        mBaiduMap.getUiSettings().setCompassEnabled(false);
+        mBaiduMap.getUiSettings().setCompassEnabled(false);         //去掉指南针
         float zoomLevel=18.0f;
         MapStatusUpdate u=MapStatusUpdateFactory.zoomTo(zoomLevel);
         mBaiduMap.animateMapStatus(u);
@@ -104,7 +104,7 @@ public class MainActivity extends Activity implements BaiduMap.OnMapClickListene
         option.setOpenGps(true);// 打开gps
         option.setCoorType("bd09ll"); // 设置坐标类型
         option.setScanSpan(1000);
-        option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);
+        option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);//高精度模式
         mLocClient.setLocOption(option);
         //地图点击事件处理
         mBaiduMap.setOnMapClickListener(this);
@@ -147,7 +147,7 @@ public class MainActivity extends Activity implements BaiduMap.OnMapClickListene
             MyLocationData locData = new MyLocationData.Builder()
                     .accuracy(location.getRadius())
                             // 此处设置开发者获取到的方向信息，顺时针0-360
-                    .direction(mTargetDirection*-1.0f)
+                    .direction(mTargetDirection*-1.0f)      //      *-1.0f反相效果
                     .latitude(location.getLatitude())
                     .longitude(location.getLongitude()).build();
             mBaiduMap.setMyLocationData(locData);
@@ -331,7 +331,7 @@ public class MainActivity extends Activity implements BaiduMap.OnMapClickListene
         }
         if (result.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
             //起终点或途经点地址有岐义，通过以下接口获取建议查询信息
-            //result.getSuggestAddrInfo()
+            result.getSuggestAddrInfo();
             return;
         }
         if (result.error == SearchResult.ERRORNO.NO_ERROR) {
@@ -377,10 +377,10 @@ public class MainActivity extends Activity implements BaiduMap.OnMapClickListene
         }
         if (result.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
             //起终点或途经点地址有岐义，通过以下接口获取建议查询信息
-            //result.getSuggestAddrInfo()
+            result.getSuggestAddrInfo();
             return;
         }
-        if (result.error == SearchResult.ERRORNO.NO_ERROR) {
+        if (result.error == SearchResult.ERRORNO.NO_ERROR) {                       //搜索无误后，显示按钮
             nodeIndex = -1;
             if(mGuideFragment!=null)
             {
@@ -585,7 +585,6 @@ public class MainActivity extends Activity implements BaiduMap.OnMapClickListene
         mOrientationSensor = mSensorManager.getSensorList(
                 Sensor.TYPE_ORIENTATION).get(0);//
         // Log.i("way", mOrientationSensor.getName());
-
         // location manager
         // mLocationManager = (LocationManager)
         // getSystemService(Context.LOCATION_SERVICE);
