@@ -178,14 +178,14 @@ public class SurfaceFragment extends Fragment implements SurfaceHolder.Callback{
             if(poiinfos!=null&&((MainActivity)getActivity()).mBaiduMap!=null) {
                 int count=poiinfos.length;
                 LatLng mLocation=new LatLng(((MainActivity)getActivity()).mBaiduMap.getLocationData().latitude,((MainActivity)getActivity()).mBaiduMap.getLocationData().longitude);
-                for(int n=0;n<count;n++) {
+                for(int n=0;n<count;n++) {                                                                   //悬浮图标显示地标
                     ImageView imageView=new ImageView(getActivity());
                     imageView.setImageResource(R.mipmap.ic_launcher);
-                    double distance= DistanceUtil. getDistance(mLocation,poiinfos[n].location);
-                    if(distance>1000) {
+                    double distance= DistanceUtil. getDistance(mLocation,poiinfos[n].location);                //获得距离
+                    if(distance>1000) {                                                                       //距离大于1000米不显示
                         continue;
                     }
-                    double rdirection=Math.atan(((poiinfos[n].location.latitude-mLocation.latitude))/((poiinfos[n].location.longitude-mLocation.longitude)));
+                    double rdirection=Math.atan(((poiinfos[n].location.latitude-mLocation.latitude))/((poiinfos[n].location.longitude-mLocation.longitude)));//获得地标与自身北向夹角
                     //normalizeDegree((((float)rdirection)-direction)*-1.0f);
                     rdirection=normalizeDegree((float)(180*rdirection/Math.PI));
                     rdirection=normalizeDegree((float)(mTargetDirection-rdirection-90.0f));
@@ -196,9 +196,9 @@ public class SurfaceFragment extends Fragment implements SurfaceHolder.Callback{
                     int height=(int)(170-((double)3/25)*distance);
                     int width=height/3*5;
                     RelativeLayout.LayoutParams lp1=new RelativeLayout.LayoutParams(width,height);
-                    lp1.topMargin=(int)((((float)1/3)-Math.cos(mUDDirection*Math.PI/180))*raly2.getHeight()-0.5f*height);
+                    lp1.topMargin=(int)((((float)1/3)-Math.cos(mUDDirection*Math.PI/180))*raly2.getHeight()-0.5f*height);                            //计算图标top
                     //if(lp1.topMargin<0) continue;
-                    lp1.leftMargin=(int)((((float)1/2)+Math.sin(rdirection * Math.PI / 180))*raly2.getWidth()-0.5f*width);
+                    lp1.leftMargin=(int)((((float)1/2)+Math.sin(rdirection * Math.PI / 180))*raly2.getWidth()-0.5f*width);                           //计算图标left
                     //if(lp1.leftMargin<0) continue;
                     raly2.addView(imageView, lp1);
                 }
