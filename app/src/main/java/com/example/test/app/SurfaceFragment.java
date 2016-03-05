@@ -218,8 +218,8 @@ public class SurfaceFragment extends Fragment implements SurfaceHolder.Callback{
         mySurfaceHolder.addCallback(this);
         mySurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         //aimÍ¼²ã
-        RelativeLayout raly=(RelativeLayout)view.findViewById(R.id.aimView);
-        raly.bringToFront();
+        //RelativeLayout raly=(RelativeLayout)view.findViewById(R.id.aimView);
+        //raly.bringToFront();
         //Compass
         RelativeLayout raly2=(RelativeLayout)view.findViewById(R.id.relativelayout_overlay);
         raly2.bringToFront();
