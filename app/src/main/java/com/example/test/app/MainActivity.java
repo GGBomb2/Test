@@ -99,7 +99,7 @@ public class MainActivity extends Activity implements BaiduMap.OnMapClickListene
 
         // 定位初始化
         mLocClient = new LocationClient(this);
-        mLocClient.registerLocationListener(myListener);
+        mLocClient.registerLocationListener(myListener);           //注册定位监听
         LocationClientOption option = new LocationClientOption();
         option.setOpenGps(true);// 打开gps
         option.setCoorType("bd09ll"); // 设置坐标类型
@@ -116,13 +116,13 @@ public class MainActivity extends Activity implements BaiduMap.OnMapClickListene
         //setContentView(R.layout.activity_main);
         initResources();// 初始化view
         initServices();// 初始化传感器和位置服务
-        mLocClient.start();
+        mLocClient.start();                                   //开始定位
         ////mCompassView.bringToFront();
 
 
     }
 
-    private void setDefaultFragment()
+    private void setDefaultFragment()                                //设置默认模块
     {
         FragmentManager fm = getFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
@@ -336,7 +336,7 @@ public class MainActivity extends Activity implements BaiduMap.OnMapClickListene
         }
         if (result.error == SearchResult.ERRORNO.NO_ERROR) {
             nodeIndex = -1;
-            if(mGuideFragment!=null)
+            if(mGuideFragment!=null)                                          //显示按钮
             {
                 mGuideFragment.mBtnPre.setVisibility(View.VISIBLE);
                 mGuideFragment.mBtnNext.setVisibility(View.VISIBLE);
