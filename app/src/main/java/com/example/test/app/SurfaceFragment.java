@@ -177,6 +177,7 @@ public class SurfaceFragment extends Fragment implements SurfaceHolder.Callback{
             tx.setText("");
             if(poiinfos!=null&&((MainActivity)getActivity()).mBaiduMap!=null) {
                 int count=poiinfos.length;
+
                 LatLng mLocation=new LatLng(((MainActivity)getActivity()).mBaiduMap.getLocationData().latitude,((MainActivity)getActivity()).mBaiduMap.getLocationData().longitude);
                 for(int n=0;n<count;n++) {                                                                   //悬浮图标显示地标
                     ImageView imageView=new ImageView(getActivity());

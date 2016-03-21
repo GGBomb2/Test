@@ -204,7 +204,7 @@ public class MainActivity extends Activity implements BaiduMap.OnMapClickListene
         //设置起终点信息，对于tranist search 来说，城市名无意义
         if(editEn.getText()!=null&&!editEn.getText().toString().equals(""))
         {
-            PlanNode stNode = PlanNode.withLocation(new LatLng(mBaiduMap.getLocationData().latitude,mBaiduMap.getLocationData().longitude));
+            PlanNode stNode = PlanNode.withLocation(new LatLng(mBaiduMap.getLocationData().latitude,mBaiduMap.getLocationData().longitude));//根据定位，判断所在城市
 
             if(mDestination==null)
             {
@@ -355,16 +355,16 @@ public class MainActivity extends Activity implements BaiduMap.OnMapClickListene
                 mSurfaceFragment.isGuiding=true;
             }
             // 添加折线
-            LatLng p1 = new LatLng(mBaiduMap.getLocationData().latitude, mBaiduMap.getLocationData().longitude);
-            LatLng p2 = new LatLng(p1.latitude+0.003f, p1.longitude+0.003f);
-            LatLng p3 = new LatLng(p1.latitude, p1.longitude+0.003f);
-            List<LatLng> points = new ArrayList<LatLng>();
-            points.add(p1);
-            points.add(p2);
-            points.add(p3);
-            OverlayOptions ooPolyline = new PolylineOptions().width(10)
-                    .color(0xAAFF0000).points(points);
-            mBaiduMap.addOverlay(ooPolyline);
+//            LatLng p1 = new LatLng(mBaiduMap.getLocationData().latitude, mBaiduMap.getLocationData().longitude);
+//            LatLng p2 = new LatLng(p1.latitude+0.003f, p1.longitude+0.003f);
+//            LatLng p3 = new LatLng(p1.latitude, p1.longitude+0.003f);
+//            List<LatLng> points = new ArrayList<LatLng>();
+//            points.add(p1);
+//            points.add(p2);
+//            points.add(p3);
+//            OverlayOptions ooPolyline = new PolylineOptions().width(10)
+//                    .color(0xAAFF0000).points(points);
+//            mBaiduMap.addOverlay(ooPolyline);
         }
 
     }
