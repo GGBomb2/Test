@@ -31,14 +31,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/end"
-                android:layout_weight="0.94"/>
+                android:layout_weight="0.94" android:autoText="false" android:editable="true"
+                android:hint="@string/text_end" android:singleLine="true"/>
         <requestFocus />
 
         <Button
 				android:layout_width="80dp"
 				android:layout_height="35dp"
 				android:background="@drawable/button_style"
-				android:text="Go"
+				android:text="@string/btn_go"
 				android:id="@+id/btn_go"
                 />
 

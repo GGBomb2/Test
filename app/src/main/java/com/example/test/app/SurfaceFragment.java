@@ -181,7 +181,7 @@ public class SurfaceFragment extends Fragment implements SurfaceHolder.Callback{
                 LatLng mLocation=new LatLng(((MainActivity)getActivity()).mBaiduMap.getLocationData().latitude,((MainActivity)getActivity()).mBaiduMap.getLocationData().longitude);
                 for(int n=0;n<count;n++) {                                                                   //悬浮图标显示地标
                     ImageView imageView=new ImageView(getActivity());
-                    imageView.setImageResource(R.mipmap.ic_launcher);
+                    imageView.setImageResource(R.drawable.favicon);
                     double distance= DistanceUtil. getDistance(mLocation,poiinfos[n].location);                //获得距离
                     if(distance>1000) {                                                                       //距离大于1000米不显示
                         continue;
@@ -194,7 +194,7 @@ public class SurfaceFragment extends Fragment implements SurfaceHolder.Callback{
                     if(Math.abs(rdirection)>90&&Math.abs(rdirection)<270) {
                         continue;
                     }
-                    int height=(int)(170-((double)3/25)*distance);
+                    int height=(int)(200-((double)3/25)*distance);
                     int width=height/3*5;
                     RelativeLayout.LayoutParams lp1=new RelativeLayout.LayoutParams(width,height);
                     lp1.topMargin=(int)((((float)1/3)-Math.cos(mUDDirection*Math.PI/180))*raly2.getHeight()-0.5f*height);                            //计算图标top

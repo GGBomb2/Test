@@ -28,4 +28,6 @@
     <string name="app_name">Test</string>
     <string name="cannot_get_location">--</string>
     <string name="hello_world">Hello world!</string>
+    <string name="btn_go">Go</string>
+    <string name="text_end">搜索</string>
 </resources>
