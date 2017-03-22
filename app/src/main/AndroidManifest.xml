@@ -32,7 +32,7 @@
                 android:process=":remote"
                 android:permission="android.permission.BAIDU_LOCATION_SERVICE">
             <intent-filter>
-                <action android:name="com.baidu.location.service_v2.6"></action>
+                <action android:name="com.baidu.location.service_v2.6"/>
             </intent-filter>
         </service>
     </application>
